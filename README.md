@@ -25,7 +25,7 @@
 
 - Get All Banks: http://localhost:5000/banks/
 
-- Get Branch Details:  http://localhost:5000/branches/1
+- Get All Branches Details:  http://localhost:5000/branches/?page=1
 
 - Get Specific Branch Details By IFSC code :  http://localhost:5000/branches/ifsc/ABHY0065001
 
