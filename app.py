@@ -1,4 +1,4 @@
-from flask import Flask, jsonify,request
+from flask import Flask, jsonify,request, abort, render_template
 from models import Bank as BankModel, Branch as BranchModel
 from database import SessionLocal
 
@@ -11,6 +11,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# root route
+@app.route("/", methods=["GET"])
+def home():
+    # Render home page template
+    return render_template('home.html')
 
 
 # route for access all banks 
@@ -52,6 +58,46 @@ def read_branches():
     })
 
 
+# route for access a single branche by ifsc code
+@app.route("/branches/ifsc/<string:ifsc_code>", methods=["GET"])
+def read_branch_by_ifsc(ifsc_code):
+    db = next(get_db())
+    branch = db.query(BranchModel).filter(BranchModel.ifsc == ifsc_code).first()
+    if branch is None:
+        abort(404, description="Branch not found")
+    return jsonify({
+        "ifsc": branch.ifsc,
+        "branch": branch.branch,
+        "address": branch.address,
+        "city": branch.city,
+        "district": branch.district,
+        "state": branch.state,
+        "bank": branch.bank.name,
+        "bank id": branch.bank.id
+    })
+
+
+# route for access all branches of perticuler Bank
+@app.route("/branches/bank/<int:bank_id>", methods=["GET"])
+def read_branches_by_bank(bank_id):
+    db = next(get_db())
+    branches = db.query(BranchModel).filter(BranchModel.bank_id == bank_id).all()
+    if not branches:
+        abort(404, description="No branches found for the given bank ID")
+    return jsonify([
+        {
+            "id": branch.id,
+            "ifsc": branch.ifsc,
+            "branch": branch.branch,
+            "address": branch.address,
+            "city": branch.city,
+            "district": branch.district,
+            "state": branch.state,
+            "bank": branch.bank.name,
+            "bank id": branch.bank.id
+        }
+        for branch in branches
+    ])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
