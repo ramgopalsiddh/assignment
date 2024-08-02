@@ -30,6 +30,6 @@
 - Get Specific Branch Details By IFSC code :  http://localhost:5000/branches/ifsc/ABHY0065001
 
 
-- Get All Branches Of a Specific Bank :  http://localhost:5000/branches/bank/60
+- Get All Branches Of a Specific Bank By Bank id :  http://localhost:5000/branches/bank/60
 
 
